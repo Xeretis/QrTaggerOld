@@ -8,9 +8,10 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
-        
     }
-    
+
+    public DbSet<ItemTag> ItemTags { get; set; }
+
     public override int SaveChanges()
     {
         UpdateTimestamps();

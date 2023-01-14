@@ -1,3 +1,4 @@
+export * from './itemTagsIndexResponse';
 export * from './loginRequest';
 export * from './loginResponse';
 export * from './loginResponseUser';

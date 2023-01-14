@@ -1,26 +1,22 @@
 import { Box, Button, createStyles } from "@mantine/core";
 
-import { useApiStore } from "../../stores/apiStore";
-import { useDeleteApiAuthLogout } from "../../api/auth/auth";
+import { FullScreenLoading } from "../../components/fullScreenLoading";
+import { useGetApiItemTags } from "../../api/item-tags/item-tags";
 
 const useStyles = createStyles((theme) => ({}));
 
 const Home = (): JSX.Element => {
     const { classes } = useStyles();
 
-    const logout = useDeleteApiAuthLogout();
-    const setUser = useApiStore((state) => state.setUser);
+    const itemTags = useGetApiItemTags();
+
+    if (itemTags.isLoading) {
+        return <FullScreenLoading />;
+    }
 
     return (
         <Box>
-            <Button
-                onClick={async () => {
-                    await logout.mutateAsync();
-                    setUser(undefined);
-                }}
-            >
-                Logout
-            </Button>
+            <Button>Logout</Button>
         </Box>
     );
 };
