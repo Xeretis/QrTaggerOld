@@ -6,5 +6,5 @@ public class ItemTagFieldGroup
 {
     [Required] public string Language { get; set; }
 
-    [Required] public List<ItemTagField> Fields { get; set; }
+    [Required] [MinLength(1)] public List<ItemTagField> Fields { get; set; }
 }

@@ -85,7 +85,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ItemTagsIndexResponse'
+                  $ref: '#/components/schemas/IndexItemTagsResponse'
     post:
       tags:
         - ItemTags
@@ -238,6 +238,22 @@ components:
             $ref: '#/components/schemas/ItemTagFieldGroup'
           nullable: true
       additionalProperties: false
+    IndexItemTagsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        token:
+          type: string
+          nullable: true
+      additionalProperties: false
     ItemTagField:
       required:
         - name
@@ -261,25 +277,10 @@ components:
           minLength: 1
           type: string
         fields:
+          minItems: 1
           type: array
           items:
             $ref: '#/components/schemas/ItemTagField'
-      additionalProperties: false
-    ItemTagsIndexResponse:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int32
-        name:
-          type: string
-          nullable: true
-        description:
-          type: string
-          nullable: true
-        token:
-          type: string
-          nullable: true
       additionalProperties: false
     LoginRequest:
       required:

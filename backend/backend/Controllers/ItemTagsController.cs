@@ -9,6 +9,7 @@ using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Net.Codecrete.QrCodeGenerator;
 
 namespace backend.Controllers;
@@ -30,11 +31,11 @@ public class ItemTagsController : Controller
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ItemTagsIndexResponse>>> Index()
+    public async Task<ActionResult<IEnumerable<IndexItemTagsResponse>>> Index()
     {
         var itemTags = await _dbContext.ItemTags.Where(t => t.OwnerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
             .AsNoTracking().ToListAsync();
-        return Ok(_mapper.Map<IEnumerable<ItemTagsIndexResponse>>(itemTags));
+        return Ok(_mapper.Map<IEnumerable<IndexItemTagsResponse>>(itemTags));
     }
 
     [AllowAnonymous]
@@ -43,7 +44,8 @@ public class ItemTagsController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public new async Task<ActionResult<ViewItemTagResponse>> View(string token)
     {
-        var itemTag = await _dbContext.ItemTags.AsNoTracking().FirstOrDefaultAsync(t => t.Token == token);
+        var itemTag = await _dbContext.ItemTags.AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Token == token);
 
         if (itemTag == null) return NotFound();
 
@@ -52,8 +54,10 @@ public class ItemTagsController : Controller
         if (itemTag.OwnerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
             response.Description = itemTag.Description;
-            var qrCode = QrCode.EncodeText($"{Request.GetBaseUrl()}/tags/view/{itemTag.Token}", QrCode.Ecc.Medium);
-            response.QRCode = $"data:image/svg+xml;utf8,{qrCode.ToSvgString(4)}";
+            var qrCode = QrCode.EncodeText($"{Request.GetBaseUrl()}tags/view/{token}",
+                QrCode.Ecc.Medium);
+            var svgText = qrCode.ToSvgString(1);
+            response.QRCode = svgText.Substring(svgText.IndexOf("<svg", StringComparison.Ordinal));
         }
 
         return Ok(response);
@@ -66,7 +70,7 @@ public class ItemTagsController : Controller
     {
         var itemTag = _mapper.Map<ItemTag>(request);
         itemTag.OwnerId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        itemTag.Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        itemTag.Token = Base64UrlEncoder.Encode(Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)));
 
         await _dbContext.ItemTags.AddAsync(itemTag);
         await _dbContext.SaveChangesAsync();

@@ -12,8 +12,8 @@ import {
     useMantineTheme,
 } from "@mantine/core";
 import { IconLogout, IconMoonStars, IconSun, IconUser } from "@tabler/icons";
+import { Outlet, useNavigate } from "react-router-dom";
 
-import { Outlet } from "react-router-dom";
 import { useApiStore } from "../../stores/apiStore";
 import { useDeleteApiAuthLogout } from "../../api/auth/auth";
 import { useUser } from "../../hooks/useUser";
@@ -25,6 +25,10 @@ const useStyles = createStyles((theme) => ({
     headerContainer: {
         height: "100%",
         maxWidth: "100%",
+    },
+    title: {
+        cursor: "pointer",
+        margin: 0,
     },
 }));
 
@@ -39,6 +43,8 @@ const ProtectedLayout = (): JSX.Element => {
     const user = useUser();
     const setUser = useApiStore((state) => state.setUser);
 
+    const navigate = useNavigate();
+
     return (
         <AppShell
             padding="md"
@@ -46,7 +52,12 @@ const ProtectedLayout = (): JSX.Element => {
             header={
                 <Header height={60} className={classes.header}>
                     <Group position="apart" align="center" className={classes.headerContainer} p="sm">
-                        <Title order={3} style={{ margin: 0 }} color={theme.fn.primaryColor()}>
+                        <Title
+                            order={3}
+                            className={classes.title}
+                            color={theme.fn.primaryColor()}
+                            onClick={() => navigate("/")}
+                        >
                             QrTagger
                         </Title>
                         <Menu position="left-start">

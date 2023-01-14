@@ -1,6 +1,6 @@
 namespace backend.Models.Responses;
 
-public class ItemTagsIndexResponse
+public class IndexItemTagsResponse
 {
     public int Id { get; set; }
 

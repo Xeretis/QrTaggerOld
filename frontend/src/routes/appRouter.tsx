@@ -11,6 +11,7 @@ export const AppRouter = () => {
     const LoginPage = lazy(() => import("../pages/auth/login"));
     const RegisterPage = lazy(() => import("../pages/auth/register"));
     const HomePage = lazy(() => import("../pages/protected/home"));
+    const TagPage = lazy(() => import("../pages/protected/tag"));
 
     return (
         <Suspense fallback={<FullScreenLoading />}>
@@ -23,6 +24,7 @@ export const AppRouter = () => {
                 <Route element={<RequireAuth />}>
                     <Route element={<ProtectedLayout />}>
                         <Route path="/home" element={<HomePage />} />
+                        <Route path="/tags/:token" element={<TagPage />} />
                     </Route>
                 </Route>
             </Routes>
