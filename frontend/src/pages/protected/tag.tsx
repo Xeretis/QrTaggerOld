@@ -195,7 +195,7 @@ const Tag = (): JSX.Element => {
     const [selectedGroup, setSelectedGroup] = useState<string | undefined>(undefined);
     const [isInitialGroupSet, setIsInitialGroupSet] = useState<boolean>(false);
 
-    const itemTag = useGetApiItemTagsToken(encodeURIComponent(token));
+    const itemTag = useGetApiItemTagsToken(token);
     const deleteTag = useDeleteApiItemTagsId();
     const queryClient = useQueryClient();
 
