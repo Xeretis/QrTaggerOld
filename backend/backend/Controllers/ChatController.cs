@@ -2,6 +2,7 @@ using System.Security.Claims;
 using AutoMapper;
 using backend.Data;
 using backend.Models.Responses;
+using backend.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -25,23 +26,23 @@ public class ChatController : Controller
         _mapper = mapper;
     }
 
-    [HttpGet("{tagId}")]
+    [HttpGet("{token}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<IndexChatMessagesResponse>>> IndexMessages(int tagId)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<IndexChatMessagesResponse>>> IndexMessages(string token)
     {
-        var mainIdentity = User.Identities
-            .FirstOrDefault(i => i.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null);
+        var itemTag = await _dbContext.ItemTags.AsNoTracking().FirstOrDefaultAsync(t => t.Token == token);
 
-        var userId = mainIdentity != null
-            ? mainIdentity.Claims.FirstOrDefault(c =>
-                c.Type == ClaimTypes.NameIdentifier)!.Value
-            : User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (itemTag == null)
+            return NotFound();
 
-        var messages = await _dbContext.ChatMessages.Where(m => m.TagId == tagId).OrderBy(m => m.CreatedAt)
+        var messages = await _dbContext.ChatMessages
+            .Where(m => m.TagId == itemTag.Id && (m.ToId == User.GetMainId() || m.FromId == User.GetMainId()))
+            .OrderBy(m => m.CreatedAt)
             .AsNoTracking()
             .ToListAsync();
 
-        var messagesDict = messages.GroupBy(m => m.FromId == userId ? m.ToId : m.FromId)
+        var messagesDict = messages.GroupBy(m => m.FromId == User.GetMainId() ? m.ToId : m.FromId)
             .ToDictionary(g => g.Key, g => g.ToList());
 
         var res = messagesDict.Select(m => new IndexChatMessagesResponse
@@ -51,13 +52,14 @@ public class ChatController : Controller
             {
                 Message = message.Message,
                 CreatedAt = message.CreatedAt,
-                Owned = message.FromId == userId
+                Owned = message.FromId == User.GetMainId()
             })
         }).ToList();
 
         return Ok(res);
     }
 
+    [AllowAnonymous]
     [HttpPost("Auth")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> Auth()

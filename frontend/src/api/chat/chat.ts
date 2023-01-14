@@ -17,51 +17,52 @@ import type {
   QueryKey
 } from '@tanstack/react-query'
 import type {
-  IndexChatMessagesResponse
+  IndexChatMessagesResponse,
+  ProblemDetails
 } from '.././model'
 import { useCustomClient } from '.././customClient';
 import type { ErrorType } from '.././customClient';
 
 
-export const useGetApiChatTagIdHook = () => {
-        const getApiChatTagId = useCustomClient<IndexChatMessagesResponse[]>();
+export const useGetApiChatTokenHook = () => {
+        const getApiChatToken = useCustomClient<IndexChatMessagesResponse[]>();
 
         return (
-    tagId: number,
+    token: string,
  signal?: AbortSignal
 ) => {
-        return getApiChatTagId(
-          {url: `/Api/Chat/${tagId}`, method: 'get', signal
+        return getApiChatToken(
+          {url: `/Api/Chat/${token}`, method: 'get', signal
     },
           );
         }
       }
     
 
-export const getGetApiChatTagIdQueryKey = (tagId: number,) => [`/Api/Chat/${tagId}`];
+export const getGetApiChatTokenQueryKey = (token: string,) => [`/Api/Chat/${token}`];
 
     
-export type GetApiChatTagIdQueryResult = NonNullable<Awaited<ReturnType<ReturnType<typeof useGetApiChatTagIdHook>>>>
-export type GetApiChatTagIdQueryError = ErrorType<unknown>
+export type GetApiChatTokenQueryResult = NonNullable<Awaited<ReturnType<ReturnType<typeof useGetApiChatTokenHook>>>>
+export type GetApiChatTokenQueryError = ErrorType<ProblemDetails>
 
-export const useGetApiChatTagId = <TData = Awaited<ReturnType<ReturnType<typeof useGetApiChatTagIdHook>>>, TError = ErrorType<unknown>>(
- tagId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<ReturnType<typeof useGetApiChatTagIdHook>>>, TError, TData>, }
+export const useGetApiChatToken = <TData = Awaited<ReturnType<ReturnType<typeof useGetApiChatTokenHook>>>, TError = ErrorType<ProblemDetails>>(
+ token: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<ReturnType<typeof useGetApiChatTokenHook>>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
   const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiChatTagIdQueryKey(tagId);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiChatTokenQueryKey(token);
 
-  const getApiChatTagId =  useGetApiChatTagIdHook();
+  const getApiChatToken =  useGetApiChatTokenHook();
 
 
-  const queryFn: QueryFunction<Awaited<ReturnType<ReturnType<typeof useGetApiChatTagIdHook>>>> = ({ signal }) => getApiChatTagId(tagId, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<ReturnType<typeof useGetApiChatTokenHook>>>> = ({ signal }) => getApiChatToken(token, signal);
 
 
   
 
-  const query = useQuery<Awaited<ReturnType<ReturnType<typeof useGetApiChatTagIdHook>>>, TError, TData>(queryKey, queryFn, {enabled: !!(tagId), ...queryOptions}) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  const query = useQuery<Awaited<ReturnType<ReturnType<typeof useGetApiChatTokenHook>>>, TError, TData>(queryKey, queryFn, {enabled: !!(token), ...queryOptions}) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
   query.queryKey = queryKey;
 

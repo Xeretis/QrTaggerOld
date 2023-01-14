@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using System.Security.Cryptography;
 using AutoMapper;
 using backend.Data;
@@ -33,7 +32,7 @@ public class ItemTagsController : Controller
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<IndexItemTagsResponse>>> Index()
     {
-        var itemTags = await _dbContext.ItemTags.Where(t => t.OwnerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+        var itemTags = await _dbContext.ItemTags.Where(t => t.OwnerId == User.GetMainId())
             .AsNoTracking().ToListAsync();
         return Ok(_mapper.Map<IEnumerable<IndexItemTagsResponse>>(itemTags));
     }
@@ -51,7 +50,7 @@ public class ItemTagsController : Controller
 
         var response = _mapper.Map<ViewItemTagResponse>(itemTag);
 
-        if (itemTag.OwnerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+        if (itemTag.OwnerId == User.GetMainId())
         {
             response.Description = itemTag.Description;
             var qrCode = QrCode.EncodeText($"{Request.GetBaseUrl()}tags/view/{token}",
@@ -69,7 +68,7 @@ public class ItemTagsController : Controller
     public async Task<ActionResult<CreateItemTagResponse>> Create(CreateItemTagRequest request)
     {
         var itemTag = _mapper.Map<ItemTag>(request);
-        itemTag.OwnerId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        itemTag.OwnerId = User.GetMainId()!;
         itemTag.Token = Base64UrlEncoder.Encode(Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)));
 
         await _dbContext.ItemTags.AddAsync(itemTag);
@@ -85,7 +84,7 @@ public class ItemTagsController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Update(int id, UpdateItemTagRequest request)
     {
-        var itemTag = await _dbContext.ItemTags.Where(t => t.OwnerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+        var itemTag = await _dbContext.ItemTags.Where(t => t.OwnerId == User.GetMainId())
             .FirstOrDefaultAsync(t => t.Id == id);
 
         if (itemTag == null) return NotFound();
@@ -101,7 +100,7 @@ public class ItemTagsController : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id)
     {
-        var itemTag = _dbContext.ItemTags.Where(t => t.OwnerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+        var itemTag = _dbContext.ItemTags.Where(t => t.OwnerId == User.GetMainId())
             .FirstOrDefault(t => t.Id == id);
 
         if (itemTag == null) return NotFound();

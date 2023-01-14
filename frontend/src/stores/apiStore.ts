@@ -7,7 +7,9 @@ import { mountStoreDevtool } from "simple-zustand-devtools";
 
 export interface ApiState {
     user?: UserResponse;
+    chatAuthenticated: boolean;
     setUser: (user: UserResponse | undefined) => void;
+    setChatAuthenticated: (chatAuthenticated: boolean) => void;
 }
 
 type ApiStorePersist = (config: StateCreator<ApiState>, options: PersistOptions<ApiState>) => StateCreator<ApiState>;
@@ -16,7 +18,9 @@ export const useApiStore = create<ApiState>(
     ((persist as unknown) as ApiStorePersist)(
         (set) => ({
             user: undefined,
-            setUser: (user) => set({ user }),
+            chatAuthenticated: false,
+            setUser: (user) => set((state) => ({ ...state, user })),
+            setChatAuthenticated: (chatAuthenticated) => set((state) => ({ ...state, chatAuthenticated })),
         }),
         { name: "apiStore" }
     )

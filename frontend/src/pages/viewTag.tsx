@@ -1,12 +1,15 @@
 import { Box, Button, Center, Group, Select, Text, Title, createStyles, useMantineTheme } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { FullScreenLoading } from "../components/fullScreenLoading";
 import { IconX } from "@tabler/icons";
 import { showNotification } from "@mantine/notifications";
+import { useApiStore } from "../stores/apiStore";
 import { useGetApiItemTagsToken } from "../api/item-tags/item-tags";
-import { useParams } from "react-router-dom";
+import { usePostApiChatAuth } from "../api/chat/chat";
 import { usePostApiLocationToken } from "../api/location/location";
+import { useUser } from "../hooks/useUser";
 
 const useStyles = createStyles((theme) => ({
     errorContainer: {
@@ -53,6 +56,13 @@ const ViewTag = (): JSX.Element => {
 
     const itemTag = useGetApiItemTagsToken(token);
     const shareLocation = usePostApiLocationToken();
+    const chatAuth = usePostApiChatAuth();
+
+    const chatAuthenticated = useApiStore((state) => state.chatAuthenticated);
+    const setChatAuthenticated = useApiStore((state) => state.setChatAuthenticated);
+    const user = useUser();
+
+    const navigate = useNavigate();
 
     const [selectedGroup, setSelectedGroup] = useState<string | undefined>(undefined);
     const [isInitialGroupSet, setIsInitialGroupSet] = useState<boolean>(false);
@@ -107,6 +117,24 @@ const ViewTag = (): JSX.Element => {
         }
     };
 
+    const enterChat = async () => {
+        if (!chatAuthenticated && !user) {
+            try {
+                await chatAuth.mutateAsync();
+                setChatAuthenticated(true);
+            } catch (e) {
+                showNotification({
+                    title: "Error",
+                    color: "red",
+                    icon: <IconX />,
+                    message: "An error occured while authenticating you for the chat. Please try again later.",
+                });
+            }
+        }
+
+        navigate(`/chat/${token}`);
+    };
+
     const languageData = itemTag.data.fieldGroups.map((g) => ({
         label: g.language,
         value: g.language,
@@ -136,9 +164,14 @@ const ViewTag = (): JSX.Element => {
                     <Select data={languageData} value={selectedGroup} onChange={setSelectedGroup} />
                 </Group>
                 {fields}
-                <Button onClick={shareLoc} mt="md">
-                    Share location
-                </Button>
+                <Group mt="md">
+                    <Button onClick={shareLoc} loading={shareLocation.isLoading} sx={{ flex: 2 }}>
+                        Share location
+                    </Button>
+                    <Button onClick={enterChat} sx={{ flex: 2 }}>
+                        Enter chat
+                    </Button>
+                </Group>
             </Box>
         </Center>
     );

@@ -125,20 +125,19 @@
         }
       }
     },
-    "/Api/Chat/{tagId}": {
+    "/Api/Chat/{token}": {
       "get": {
         "tags": [
           "Chat"
         ],
         "parameters": [
           {
-            "name": "tagId",
+            "name": "token",
             "in": "path",
             "required": true,
             "style": "simple",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],
@@ -152,6 +151,16 @@
                   "items": {
                     "$ref": "#/components/schemas/IndexChatMessagesResponse"
                   }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -768,6 +777,10 @@
             "nullable": true
           },
           "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "ownerId": {
             "type": "string",
             "nullable": true
           },

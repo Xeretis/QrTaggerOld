@@ -311,6 +311,9 @@ const Tag = (): JSX.Element => {
                         <Select data={languageData} value={selectedGroup} onChange={setSelectedGroup} />
                     </Group>
                     {fields}
+                    <Button mt="md" onClick={() => navigate(`/chat/${token}`)}>
+                        See chats
+                    </Button>
                 </Box>
             </Box>
         </Box>

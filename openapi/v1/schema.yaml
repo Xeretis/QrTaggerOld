@@ -73,18 +73,17 @@ paths:
       responses:
         '204':
           description: No Content
-  '/Api/Chat/{tagId}':
+  '/Api/Chat/{token}':
     get:
       tags:
         - Chat
       parameters:
-        - name: tagId
+        - name: token
           in: path
           required: true
           style: simple
           schema:
-            type: integer
-            format: int32
+            type: string
       responses:
         '200':
           description: Success
@@ -94,6 +93,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/IndexChatMessagesResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /Api/Chat/Auth:
     post:
       tags:
@@ -502,6 +507,9 @@ components:
           type: string
           nullable: true
         description:
+          type: string
+          nullable: true
+        ownerId:
           type: string
           nullable: true
         token:

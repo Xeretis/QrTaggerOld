@@ -33,6 +33,6 @@ public class ChatHub : Hub
         _dbContext.ChatMessages.Add(newMessage);
         await _dbContext.SaveChangesAsync();
 
-        await Clients.Users(userId).SendAsync("MessageReceived", message);
+        await Clients.Users(userId).SendAsync("MessageReceived", message, Context.UserIdentifier);
     }
 }

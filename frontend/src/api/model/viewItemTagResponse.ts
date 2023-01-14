@@ -10,6 +10,7 @@ export interface ViewItemTagResponse {
   id?: number;
   name?: string | null;
   description?: string | null;
+  ownerId?: string | null;
   token?: string | null;
   qrCode?: string | null;
   fieldGroups?: ItemTagFieldGroup[] | null;

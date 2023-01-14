@@ -13,6 +13,8 @@ export const AppRouter = () => {
     const HomePage = lazy(() => import("../pages/protected/home"));
     const TagPage = lazy(() => import("../pages/protected/tag"));
     const ViewTagPage = lazy(() => import("../pages/viewTag"));
+    const ChatPage = lazy(() => import("../pages/chat"));
+    const FourOFourPage = lazy(() => import("../pages/fourOFour"));
 
     return (
         <Suspense fallback={<FullScreenLoading />}>
@@ -29,6 +31,8 @@ export const AppRouter = () => {
                     </Route>
                 </Route>
                 <Route path="/tags/view/:token" element={<ViewTagPage />} />
+                <Route path="/chat/:token" element={<ChatPage />} />
+                <Route path="*" element={<FourOFourPage />} />
             </Routes>
         </Suspense>
     );
