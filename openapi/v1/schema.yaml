@@ -3,6 +3,76 @@ info:
   title: QrTagger
   version: v1
 paths:
+  /Api/Auth/Register:
+    post:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /Api/Auth/Login:
+    post:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /Api/Auth/User:
+    get:
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+  /Api/Auth/Logout:
+    delete:
+      tags:
+        - Auth
+      responses:
+        '204':
+          description: No Content
   /WeatherForecast:
     get:
       tags:
@@ -29,6 +99,92 @@ paths:
                   $ref: '#/components/schemas/WeatherForecast'
 components:
   schemas:
+    LoginRequest:
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          minLength: 1
+          type: string
+        password:
+          minLength: 1
+          type: string
+      additionalProperties: false
+    LoginResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/LoginResponseUser'
+      additionalProperties: false
+    LoginResponseUser:
+      type: object
+      properties:
+        id:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        userName:
+          type: string
+          nullable: true
+      additionalProperties: false
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        status:
+          type: integer
+          format: int32
+          nullable: true
+        detail:
+          type: string
+          nullable: true
+        instance:
+          type: string
+          nullable: true
+      additionalProperties: { }
+    RegisterRequest:
+      required:
+        - confirmPassword
+        - email
+        - password
+        - userName
+      type: object
+      properties:
+        email:
+          minLength: 1
+          type: string
+        userName:
+          minLength: 1
+          type: string
+        password:
+          minLength: 1
+          type: string
+        confirmPassword:
+          minLength: 1
+          type: string
+      additionalProperties: false
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        userName:
+          type: string
+          nullable: true
+      additionalProperties: false
     WeatherForecast:
       type: object
       properties:

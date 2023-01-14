@@ -1,5 +1,7 @@
+using backend.Auth.Services;
 using backend.Data;
 using backend.Data.Entities;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,7 +11,14 @@ public static class InjectServices
 {
     public static IServiceCollection AddAuth(this IServiceCollection services)
     {
-        services.AddAuthentication("cookie").AddCookie("cookie");
+        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o =>
+        {
+            o.Events.OnRedirectToLogin = (context) =>
+            {
+                context.Response.StatusCode = 401;
+                return Task.CompletedTask;
+            };
+        });
 
         var core = services.AddIdentityCore<ApiUser>(options =>
         {
@@ -27,7 +36,7 @@ public static class InjectServices
             .AddSignInManager<SignInManager<ApiUser>>()
             .AddDefaultTokenProviders();
 
-        //services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         services.AddTransient<IPolicyEvaluator, ChallengeUnauthenticatedPolicyEvaluator>();
         services.AddTransient<PolicyEvaluator>();
