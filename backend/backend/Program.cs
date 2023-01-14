@@ -40,7 +40,7 @@ app.UseAuthorization();
 
 app.UseEndpoints(_ => { });
 
-app.UseSpa(o => o.UseProxyToSpaDevelopmentServer("http://localhost:5173/"));
+app.UseSpa(o => o.UseProxyToSpaDevelopmentServer("http://localhost:4173/"));
 
 app.MapControllers();
 app.MapHub<ChatHub>("/Hubs/Chat",
