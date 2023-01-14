@@ -1,5 +1,7 @@
 export * from './createItemTagRequest';
 export * from './createItemTagResponse';
+export * from './indexChatMessagesResponse';
+export * from './indexChatMessagesResponseMessage';
 export * from './indexItemTagsResponse';
 export * from './itemTagField';
 export * from './itemTagFieldGroup';

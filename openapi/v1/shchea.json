@@ -125,6 +125,52 @@
         }
       }
     },
+    "/Api/Chat/{tagId}": {
+      "get": {
+        "tags": [
+          "Chat"
+        ],
+        "parameters": [
+          {
+            "name": "tagId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IndexChatMessagesResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Api/Chat/Auth": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
     "/Api/ItemTags": {
       "get": {
         "tags": [
@@ -392,18 +438,6 @@
           }
         }
       }
-    },
-    "/Api/Location/Auth": {
-      "post": {
-        "tags": [
-          "Location"
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
-          }
-        }
-      }
     }
   },
   "components": {
@@ -460,6 +494,40 @@
               "$ref": "#/components/schemas/ItemTagFieldGroup"
             },
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IndexChatMessagesResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IndexChatMessagesResponseMessage"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IndexChatMessagesResponseMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "owned": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false

@@ -1,9 +1,6 @@
-using System.Security.Claims;
 using backend.Data;
 using backend.Models.Requests;
 using backend.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,29 +48,5 @@ public class LocationController : Controller
 
         return StatusCode(StatusCodes.Status500InternalServerError,
             "An error occured. The Mail with attachment could not be sent.");
-    }
-
-    [HttpPost("Auth")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<ActionResult> Auth()
-    {
-        var authClaims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
-        };
-
-        var identity = new ClaimsIdentity(authClaims, "LocationAuth");
-
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(identity),
-            new AuthenticationProperties
-            {
-                IsPersistent = true,
-                AllowRefresh = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddYears(1)
-            });
-
-        return NoContent();
     }
 }

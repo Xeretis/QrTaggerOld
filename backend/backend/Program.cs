@@ -1,6 +1,8 @@
 using backend.Auth;
 using backend.Data;
+using backend.Realtime;
 using backend.Services;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,7 @@ builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddPersistence(builder.Configuration.GetConnectionString("DefaultConnection"));
 builder.Services.AddAuth();
 
+builder.Services.AddSignalR();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddMemoryCache();
 
@@ -38,5 +41,7 @@ app.UseEndpoints(_ => { });
 app.UseSpa(o => o.UseProxyToSpaDevelopmentServer("http://localhost:5173/"));
 
 app.MapControllers();
+app.MapHub<ChatHub>("/Hubs/Chat",
+    o => { o.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling; });
 
 app.Run();

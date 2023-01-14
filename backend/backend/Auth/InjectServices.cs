@@ -43,6 +43,10 @@ public static class InjectServices
             o.AddPolicy("LocationAuth", onlyLocationAuth
                 .RequireAuthenticatedUser()
                 .Build());
+
+            var bothAuth =
+                new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme, "LocationAuth");
+            o.AddPolicy("Both", bothAuth.RequireAuthenticatedUser().Build());
         });
 
         var core = services.AddIdentityCore<ApiUser>(options =>

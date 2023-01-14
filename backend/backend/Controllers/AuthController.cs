@@ -34,7 +34,7 @@ public class AuthController : Controller
         _dbContext = dbContext;
         _userManager = userManager;
     }
-    
+
     [HttpPost("Register")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -46,7 +46,6 @@ public class AuthController : Controller
         if (!result.Succeeded)
         {
             foreach (var error in result.Errors)
-            {
                 switch (error.Code)
                 {
                     case "DuplicateUserName":
@@ -62,14 +61,13 @@ public class AuthController : Controller
                         ModelState.AddModelError(nameof(request.UserName), error.Description);
                         break;
                 }
-            }
 
             return ValidationProblem();
         }
-        
+
         return NoContent();
     }
-    
+
     [HttpPost("Login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -95,17 +93,20 @@ public class AuthController : Controller
 
         var authClaims = await _authService.GetAuthClaims(user);
         var identity = new ClaimsIdentity(authClaims, CookieAuthenticationDefaults.AuthenticationScheme);
-        
+
+        if (User.Identity is { IsAuthenticated: true })
+            User.AddIdentity(identity);
+
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(identity),
+            User.Identity is { IsAuthenticated: false } ? new ClaimsPrincipal(identity) : User,
             new AuthenticationProperties
             {
                 IsPersistent = true,
                 AllowRefresh = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(2),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(2)
             });
-        
+
         var userResponse = _mapper.Map<LoginResponseUser>(user);
 
         return Ok(new LoginResponse
@@ -113,7 +114,7 @@ public class AuthController : Controller
             User = userResponse
         });
     }
-    
+
     [Authorize]
     [HttpGet("User")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -122,7 +123,7 @@ public class AuthController : Controller
         var user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         return Ok(_mapper.Map<UserResponse>(user));
     }
-    
+
     [Authorize]
     [HttpDelete("Logout")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

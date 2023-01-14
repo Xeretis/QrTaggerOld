@@ -10,4 +10,7 @@ public class ChatMessage : BaseEntity
 
     [Required] public string FromId { get; set; }
     [Required] public string ToId { get; set; }
+
+    [Required] public int TagId { get; set; }
+    public ItemTag Tag { get; set; }
 }
