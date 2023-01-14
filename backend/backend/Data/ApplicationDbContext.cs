@@ -12,6 +12,13 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
 
     public DbSet<ItemTag> ItemTags { get; set; }
 
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.Entity<ItemTag>().HasIndex(t => t.Token).IsUnique();
+
+        base.OnModelCreating(builder);
+    }
+
     public override int SaveChanges()
     {
         UpdateTimestamps();
