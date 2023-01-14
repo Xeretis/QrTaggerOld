@@ -56,7 +56,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const EditItemTagModalContent = ({ itemTag, itemTagKey }: { itemTag: ViewItemTagResponse; itemTagKey: QueryKey }) => {
-    const createItemTag = usePutApiItemTagsId();
+    const editItemTag = usePutApiItemTagsId();
 
     const queryClient = useQueryClient();
 
@@ -73,7 +73,7 @@ const EditItemTagModalContent = ({ itemTag, itemTagKey }: { itemTag: ViewItemTag
 
     const submit = form.onSubmit(async (values) => {
         try {
-            await createItemTag.mutateAsync({ id: itemTag.id, data: values });
+            await editItemTag.mutateAsync({ id: itemTag.id, data: values });
             queryClient.invalidateQueries(itemTagKey);
             closeAllModals();
         } catch (error) {
@@ -179,7 +179,7 @@ const EditItemTagModalContent = ({ itemTag, itemTagKey }: { itemTag: ViewItemTag
                 >
                     Create new field
                 </Button>
-                <Button type="submit" disabled={!canSave}>
+                <Button type="submit" disabled={!canSave} loading={editItemTag.isLoading}>
                     Save
                 </Button>
             </Group>
@@ -190,7 +190,7 @@ const EditItemTagModalContent = ({ itemTag, itemTagKey }: { itemTag: ViewItemTag
 const Tag = (): JSX.Element => {
     const { classes } = useStyles();
 
-    const { token } = useParams();
+    const { token } = useParams<{ token: string }>();
 
     const [selectedGroup, setSelectedGroup] = useState<string | undefined>(undefined);
     const [isInitialGroupSet, setIsInitialGroupSet] = useState<boolean>(false);

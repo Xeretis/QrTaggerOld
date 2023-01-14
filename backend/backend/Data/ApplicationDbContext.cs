@@ -11,6 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<ApiUser>
     }
 
     public DbSet<ItemTag> ItemTags { get; set; }
+    public DbSet<ChatMessage> ChatMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

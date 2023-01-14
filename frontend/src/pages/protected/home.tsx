@@ -155,7 +155,7 @@ const CreateItemTagModalContent = ({ itemTagsKey }: { itemTagsKey: QueryKey }) =
                 >
                     Create new field
                 </Button>
-                <Button type="submit" disabled={!canSave}>
+                <Button type="submit" disabled={!canSave} loading={createItemTag.isLoading}>
                     Save
                 </Button>
             </Group>

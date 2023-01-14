@@ -9,6 +9,7 @@ export * from './loginResponse';
 export * from './loginResponseUser';
 export * from './problemDetails';
 export * from './registerRequest';
+export * from './shareLocationRequest';
 export * from './updateItemTagRequest';
 export * from './userResponse';
 export * from './viewItemTagResponse';

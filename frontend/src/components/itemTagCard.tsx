@@ -21,7 +21,7 @@ export const ItemTagCard = ({ itemTag }: { itemTag: IndexItemTagsResponse }): JS
                         {itemTag.description}
                     </Text>
                 </Box>
-                <Button component={Link} to={`/tags/${itemTag.token}`} radius="lg">
+                <Button component={Link} to={`/tags/${itemTag.token}`} radius="md">
                     View
                 </Button>
             </Group>

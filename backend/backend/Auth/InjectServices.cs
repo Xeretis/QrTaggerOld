@@ -2,6 +2,7 @@ using backend.Auth.Services;
 using backend.Data;
 using backend.Data.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Identity;
 
@@ -11,13 +12,37 @@ public static class InjectServices
 {
     public static IServiceCollection AddAuth(this IServiceCollection services)
     {
-        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o =>
-        {
-            o.Events.OnRedirectToLogin = (context) =>
+        services.AddAuthentication(o => { o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme; })
+            .AddCookie(
+                CookieAuthenticationDefaults.AuthenticationScheme, o =>
+                {
+                    o.Events.OnRedirectToLogin = context =>
+                    {
+                        context.Response.StatusCode = 401;
+                        return Task.CompletedTask;
+                    };
+                })
+            .AddCookie("LocationAuth", o =>
             {
-                context.Response.StatusCode = 401;
-                return Task.CompletedTask;
-            };
+                o.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                };
+            });
+
+        services.AddAuthorization(o =>
+        {
+            var defaultAuthorizationPolicyBuilder =
+                new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme);
+            defaultAuthorizationPolicyBuilder =
+                defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+            o.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+
+            var onlyLocationAuth = new AuthorizationPolicyBuilder("LocationAuth");
+            o.AddPolicy("LocationAuth", onlyLocationAuth
+                .RequireAuthenticatedUser()
+                .Build());
         });
 
         var core = services.AddIdentityCore<ApiUser>(options =>

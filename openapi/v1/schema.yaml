@@ -195,6 +195,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+  '/Api/Location/{token}':
+    post:
+      tags:
+        - Location
+      parameters:
+        - name: token
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShareLocationRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ShareLocationRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ShareLocationRequest'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Server Error
+  /Api/Location/Auth:
+    post:
+      tags:
+        - Location
+      responses:
+        '204':
+          description: No Content
 components:
   schemas:
     CreateItemTagRequest:
@@ -352,6 +398,19 @@ components:
           minLength: 1
           type: string
         confirmPassword:
+          minLength: 1
+          type: string
+      additionalProperties: false
+    ShareLocationRequest:
+      required:
+        - latitude
+        - longitude
+      type: object
+      properties:
+        latitude:
+          minLength: 1
+          type: string
+        longitude:
           minLength: 1
           type: string
       additionalProperties: false
