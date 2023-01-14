@@ -1,20 +1,25 @@
+using backend.Auth;
+using backend.Data;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo {Title = "QrTagger", Version = "v1"});
 });
 
+builder.Services.AddPersistence(builder.Configuration.GetConnectionString("DefaultConnection"));
+builder.Services.AddAuth();
+
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddMemoryCache();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -23,7 +28,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseEndpoints(_ => {});
+
+app.UseSpa(o => o.UseProxyToSpaDevelopmentServer("http://localhost:5173/"));
 
 app.MapControllers();
 
